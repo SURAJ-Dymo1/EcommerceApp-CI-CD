@@ -1,0 +1,191 @@
+# Default values for NexShop DevOps E-Commerce Platform.
+# This is a YAML-formatted file.
+
+# Global configuration that can be accessed by any template
+global:
+  # Base namespace to deploy components (defaults to release namespace if not specified)
+  namespace: ""
+
+# Backend service configurations (FastAPI application)
+backend:
+  replicaCount: 2
+
+  image:
+    repository: yourdockerusername/ecommerce-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+  readinessProbe:
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  livenessProbe:
+    initialDelaySeconds: 20
+    periodSeconds: 15
+
+  # ConfigMap variables (plain text)
+  config:
+    databaseName: "ecommerce"
+    projectName: "NexShop E-Commerce API Production"
+
+  # Secrets (plain text - templates will Base64 encode them dynamically)
+  secrets:
+    mongodbUrl: "mongodb://admin:adminpassword@mongodb-headless:27017"
+    jwtSecret: "SUPER_SECRET_KEY_FOR_JWT_SIGNING_1234567890!"
+
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# Frontend service configurations (React single-page application)
+frontend:
+  replicaCount: 2
+
+  image:
+    repository: yourdockerusername/ecommerce-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  livenessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 15
+
+  # ConfigMap variables (plain text)
+  config:
+    appEnv: "production"
+
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+# MongoDB Stateful database configuration
+mongodb:
+  replicaCount: 1
+
+  image:
+    repository: mongo
+    tag: "6.0"
+    pullPolicy: IfNotPresent
+
+  service:
+    port: 27017
+    targetPort: 27017
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Secrets (plain text - templates will Base64 encode them dynamically)
+  secrets:
+    rootUsername: "admin"
+    rootPassword: "adminpassword"
+
+  # Storage configurations for StatefulSet persistence
+  persistence:
+    enabled: true
+    storageClassName: "manual"
+    accessMode: "ReadWriteOnce"
+    size: 2Gi
+    hostPath: "/mnt/data/mongodb"
+    createPV: true
+    createPVC: true
+
+# NGINX Ingress rules
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  hosts:
+    - host: ecommerce.local
+      paths:
+        - path: /api
+          pathType: Prefix
+          backendService: backend
+          backendPort: 8000
+        - path: /
+          pathType: Prefix
+          backendService: frontend
+          backendPort: 80
+
+# Monitoring stack configurations
+monitoring:
+  # Prometheus metrics collector
+  prometheus:
+    enabled: true
+    image:
+      repository: prom/prometheus
+      tag: v2.45.0
+      pullPolicy: IfNotPresent
+    service:
+      type: NodePort
+      port: 9090
+      targetPort: 9090
+      nodePort: 30090
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  # Grafana dashboard visualizer
+  grafana:
+    enabled: true
+    image:
+      repository: grafana/grafana
+      tag: 10.2.0
+      pullPolicy: IfNotPresent
+    service:
+      type: NodePort
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi
+    env:
+      adminPassword: "admin"
+      allowSignUp: "false"

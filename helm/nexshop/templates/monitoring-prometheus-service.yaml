@@ -1,0 +1,21 @@
+{{- if .Values.monitoring.prometheus.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  labels:
+    {{- include "nexshop.labels" . | nindent 4 }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: {{ .Values.monitoring.prometheus.service.port | quote }}
+spec:
+  selector:
+    app: prometheus-server
+  type: {{ .Values.monitoring.prometheus.service.type }}
+  ports:
+    - port: {{ .Values.monitoring.prometheus.service.port }}
+      targetPort: {{ .Values.monitoring.prometheus.service.targetPort }}
+      {{- if eq .Values.monitoring.prometheus.service.type "NodePort" }}
+      nodePort: {{ .Values.monitoring.prometheus.service.nodePort }}
+      {{- end }}
+{{- end }}

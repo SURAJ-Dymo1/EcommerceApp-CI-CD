@@ -1,0 +1,18 @@
+{{- if .Values.monitoring.grafana.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  labels:
+    {{- include "nexshop.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.monitoring.grafana.service.port }}
+      targetPort: {{ .Values.monitoring.grafana.service.targetPort }}
+      {{- if eq .Values.monitoring.grafana.service.type "NodePort" }}
+      nodePort: {{ .Values.monitoring.grafana.service.nodePort }}
+      {{- end }}
+  selector:
+    app: grafana
+  type: {{ .Values.monitoring.grafana.service.type }}
+{{- end }}

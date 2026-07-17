@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  labels:
+    {{- include "nexshop.labels" . | nindent 4 }}
+    app: frontend
+data:
+  app-env: {{ .Values.frontend.config.appEnv | quote }}

@@ -1,0 +1,17 @@
+{{- if and .Values.mongodb.persistence.enabled .Values.mongodb.persistence.createPV -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv
+  labels:
+    {{- include "nexshop.labels" . | nindent 4 }}
+    type: local
+spec:
+  storageClassName: {{ .Values.mongodb.persistence.storageClassName | quote }}
+  capacity:
+    storage: {{ .Values.mongodb.persistence.size | quote }}
+  accessModes:
+    - {{ .Values.mongodb.persistence.accessMode }}
+  hostPath:
+    path: {{ .Values.mongodb.persistence.hostPath | quote }}
+{{- end }}

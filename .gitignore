@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/build/
+
+# Python caching & envs
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+/backend/__pycache__/
+/backend/.venv/
+/backend/venv/
+
+# Terraform
+.terraform/
+/terraform/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local env files / secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.pem
+*.key
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store

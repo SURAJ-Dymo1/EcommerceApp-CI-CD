@@ -1,0 +1,15 @@
+{{- if and .Values.mongodb.persistence.enabled .Values.mongodb.persistence.createPVC -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  labels:
+    {{- include "nexshop.labels" . | nindent 4 }}
+spec:
+  storageClassName: {{ .Values.mongodb.persistence.storageClassName | quote }}
+  accessModes:
+    - {{ .Values.mongodb.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.persistence.size | quote }}
+{{- end }}
