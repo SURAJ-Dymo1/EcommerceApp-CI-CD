@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: surajmane121045/ecom-backend:8a29c7189a0b69549d40f80837b242926ca934b4
+          image: surajmane121045/ecom-backend:d166978f1d7b0a700c46728267208cdb67e8310d
           ports:
             - containerPort: 8000
               name: http
