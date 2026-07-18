@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: surajmane121045/ecom-frontend:55d8b2103fd19f6346292c696d5f8201a328acaa
+          image: surajmane121045/ecom-frontend:aada2737e98279401dde0775ab7244022ae322e4
           ports:
             - containerPort: 80
               name: http
